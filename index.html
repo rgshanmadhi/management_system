@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<center><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+</head>
+<body>
+    <h1>User Management</h1>
+    <form id="userForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" placeholder="name" name="name" required ><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" placeholder="email" name="email" required><br>
+        <button type="submit">Add User</button>
+    </form>
+    <ul id="userList"></ul></center>
+
+    <script>
+        document.getElementById('userForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const response = await fetch('/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, email })
+            });
+            const data = await response.json();
+            alert(data.message);
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            fetchUsers();
+        });
+
+        async function fetchUsers() {
+            const response = await fetch('/users');
+            const users = await response.json();
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = `${user[1]} - ${user[2]}`;
+                userList.appendChild(li);
+            });
+        }
+
+        fetchUsers();
+    </script>
+</body>
+</html>
